@@ -2,13 +2,19 @@ module Airbrake
   module Rails
     module ControllerMethods
 
+      attr_writer :airbrake_custom_data
+
+      def airbrake_custom_data
+        @airbrake_custom_data ||= {}
+      end
+
       def airbrake_request_data
         { :parameters       => airbrake_filter_if_filtering(params.to_hash),
           :session_data     => airbrake_filter_if_filtering(airbrake_session_data),
           :controller       => params[:controller],
           :action           => params[:action],
           :url              => airbrake_request_url,
-          :cgi_data         => airbrake_filter_if_filtering(request.env) }
+          :cgi_data         => airbrake_filter_if_filtering(request.env).merge(airbrake_custom_data) }
       end
 
       private
